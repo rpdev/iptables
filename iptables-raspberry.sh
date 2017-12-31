@@ -54,8 +54,8 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -A OUTPUT -p udp -d 8.8.4.4 --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Google DNS" -j ACCEPT
 
 # SSH Server
-"$IPTABLES" -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "SSH Server" -j ACCEPT
-"$IPTABLES" -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "SSH Server" -j ACCEPT
+"$IPTABLES" -A INPUT -p tcp -s "$LAN" --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "SSH Server" -j ACCEPT
+"$IPTABLES" -A OUTPUT -p tcp --sport 22 -d "$LAN" -m conntrack --ctstate ESTABLISHED -m comment --comment "SSH Server" -j ACCEPT
 
 # HTTP Server
 "$IPTABLES" -A INPUT -p tcp -s "$LAN" --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "HTTP Server" -j ACCEPT
