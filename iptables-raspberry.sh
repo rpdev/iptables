@@ -35,6 +35,7 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -A INPUT -p tcp -s "$LAN" --dport 443 -m comment --comment "HTTPS PI-hole" -j REJECT --reject-with tcp-reset
 "$IPTABLES" -A OUTPUT -p tcp -d "$LAN" --sport 443 --tcp-flags ALL ACK,RST -m comment --comment "HTTPS PI-hole" -j ACCEPT
 "$IPTABLES" -A INPUT -p udp -s "$LAN" --dport 443 -m comment --comment "HTTPS QUIC PI-hole" -j REJECT
+"$IPTABLES" -A OUTPUT -p icmp --icmp-type 3/3 -d "$LAN" -m comment --comment "HTTPS QUIC PI-hole" -j ACCEPT
 
 # Invalid
 "$IPTABLES" -A INPUT -m conntrack --ctstate INVALID -j DROP
