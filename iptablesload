@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -f /etc/iptables.rules ]; then
+	/sbin/iptables-restore -c < /etc/iptables.rules
+fi
+exit 0
+
