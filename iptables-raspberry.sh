@@ -2,6 +2,7 @@
 
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
+GITHUB="192.30.252.0/22"
 
 #########
 # CLEAN #
@@ -10,10 +11,13 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -F
 "$IPTABLES" -X
 "$IPTABLES" -F
+
+##########
+# POLICY #
+##########
 "$IPTABLES" -P INPUT DROP
-"$IPTABLES" -A INPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
-"$IPTABLES" -A INPUT -i lo -j ACCEPT
-"$IPTABLES" -P OUTPUT ACCEPT
+"$IPTABLES" -P OUTPUT DROP
+"$IPTABLES" -P FORWARD DROP
 
 #########
 # RULES #
@@ -80,10 +84,10 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -A INPUT -p udp --sport 68 --dport 67 -m comment --comment "DHCP Client" -j DROP
 
 # Github
-"$IPTABLES" -A INPUT -p tcp -s github.com --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "Github" -j ACCEPT
-"$IPTABLES" -A OUTPUT -p tcp -d github.com --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Github" -j ACCEPT
-"$IPTABLES" -A INPUT -p tcp -s github.com --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
-"$IPTABLES" -A OUTPUT -p tcp -d github.com --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+"$IPTABLES" -A INPUT -p tcp -s "$GITHUB" --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "Github" -j ACCEPT
+"$IPTABLES" -A OUTPUT -p tcp -d "$GITHUB" --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Github" -j ACCEPT
+"$IPTABLES" -A INPUT -p tcp -s "$GITHUB" --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+"$IPTABLES" -A OUTPUT -p tcp -d "$GITHUB" --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -m comment --comment "Loopback" -j ACCEPT
@@ -92,16 +96,3 @@ LAN="192.168.1.0/24"
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"
 "$IPTABLES" -A OUTPUT -j LOG --log-prefix "[OUTPUT]"
-
-##########
-# POLICY #
-##########
-"$IPTABLES" -P INPUT DROP
-"$IPTABLES" -P OUTPUT DROP
-"$IPTABLES" -P FORWARD DROP
-
-############
-# CLEAN UP #
-############
-"$IPTABLES" -D INPUT 1
-"$IPTABLES" -D INPUT 1
