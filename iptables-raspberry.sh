@@ -34,6 +34,7 @@ LAN="192.168.1.0/24"
 # PI-hole
 "$IPTABLES" -A INPUT -p tcp -s "$LAN" --dport 443 -m comment --comment "HTTPS PI-hole" -j REJECT --reject-with tcp-reset
 "$IPTABLES" -A OUTPUT -p tcp -d "$LAN" --sport 443 --tcp-flags ALL ACK,RST -m comment --comment "HTTPS PI-hole" -j ACCEPT
+"$IPTABLES" -A INPUT -p udp -s "$LAN" --dport 443 -m comment --comment "HTTPS QUIC PI-hole" -j REJECT
 
 # Invalid
 "$IPTABLES" -A INPUT -m conntrack --ctstate INVALID -j DROP
@@ -81,6 +82,8 @@ LAN="192.168.1.0/24"
 # Github
 "$IPTABLES" -A INPUT -p tcp -s github.com --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "Github" -j ACCEPT
 "$IPTABLES" -A OUTPUT -p tcp -d github.com --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Github" -j ACCEPT
+"$IPTABLES" -A INPUT -p tcp -s github.com --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+"$IPTABLES" -A OUTPUT -p tcp -d github.com --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -m comment --comment "Loopback" -j ACCEPT
