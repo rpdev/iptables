@@ -12,5 +12,5 @@ sudo cp iptablesload /etc/network/if-pre-up.d/
 sudo cp iptablessave /etc/network/if-post-down.d/
 ```
 
-## Platforms
+## Rules
 ### [Raspberry running pi-hole](iptables-raspberry.sh) - Simple statefull firewall for raspberry pi running [pi-hole](https://github.com/pi-hole/pi-hole)
