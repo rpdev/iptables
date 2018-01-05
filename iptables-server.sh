@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if [ -z "$SSH_PORT" ]; then
-    echo "SSH_PORT has not been definied!"
+if [ $# != 1 ]; then
+    echo "$0 requires ssh port as parameter"
     exit 1
 fi
 
+$SSH_PORT="$1"
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
 
