@@ -39,6 +39,11 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -A out -j ACCEPT
 
 #########
+# BLOCK #
+#########
+bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
+
+#########
 # RULES #
 #########
 
@@ -91,9 +96,3 @@ LAN="192.168.1.0/24"
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"
 "$IPTABLES" -A OUTPUT -j LOG --log-prefix "[OUTPUT]"
-
-
-#########
-# BLOCK #
-#########
-bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"

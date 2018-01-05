@@ -20,6 +20,11 @@ GITHUB="192.30.252.0/22"
 "$IPTABLES" -P FORWARD DROP
 
 #########
+# BLOCK #
+#########
+bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
+
+#########
 # RULES #
 #########
 
@@ -89,9 +94,3 @@ GITHUB="192.30.252.0/22"
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"
 "$IPTABLES" -A OUTPUT -j LOG --log-prefix "[OUTPUT]"
-
-
-#########
-# BLOCK #
-#########
-bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
