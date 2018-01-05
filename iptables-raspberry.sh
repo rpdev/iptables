@@ -23,13 +23,6 @@ GITHUB="192.30.252.0/22"
 # RULES #
 #########
 
-# Block
-"$IPTABLES" -A INPUT -p udp --sport 17500 --dport 17500 -m comment --comment "Dropbox" -j DROP
-"$IPTABLES" -A INPUT -p udp --sport 57621 --dport 57621 -m comment --comment "Spotify" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 137 --dport 137 -m comment --comment "NetBIOS Name Service" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 138 --dport 138 -m comment --comment "NetBIOS Datagram Service" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 27031:27036 --dport 27031:27036 -m comment --comment "Steam, In-Home Streaming" -j DROP
-
 # DNS ICMP
 "$IPTABLES" -A OUTPUT -p icmp --icmp-type 3/3 -d 8.8.8.8 -m comment --comment "Destination port unreachable Google DNS" -j DROP
 "$IPTABLES" -A OUTPUT -p icmp --icmp-type 3/3 -d 8.8.4.4 -m comment --comment "Destination port unreachable Google DNS" -j DROP
@@ -96,3 +89,9 @@ GITHUB="192.30.252.0/22"
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"
 "$IPTABLES" -A OUTPUT -j LOG --log-prefix "[OUTPUT]"
+
+
+#########
+# BLOCK #
+#########
+bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"

@@ -41,13 +41,6 @@ LAN="192.168.1.0/24"
 # RULES #
 #########
 
-# Block
-"$IPTABLES" -A INPUT -p udp --sport 17500 --dport 17500 -m comment --comment "Dropbox" -j DROP
-"$IPTABLES" -A INPUT -p udp --sport 57621 --dport 57621 -m comment --comment "Spotify" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 137 --dport 137 -m comment --comment "NetBIOS Name Service" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 138 --dport 138 -m comment --comment "NetBIOS Datagram Service" -j DROP
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 27031:27036 --dport 27031:27036 -m comment --comment "Steam, In-Home Streaming" -j DROP
-
 # DNS UDP
 "$IPTABLES" -A INPUT -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -m comment --comment "DNS UDP" -j in
 "$IPTABLES" -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "DNS UDP" -j out
@@ -97,3 +90,9 @@ LAN="192.168.1.0/24"
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"
 "$IPTABLES" -A OUTPUT -j LOG --log-prefix "[OUTPUT]"
+
+
+#########
+# BLOCK #
+#########
+bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
