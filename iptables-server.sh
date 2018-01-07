@@ -29,12 +29,12 @@ LAN="192.168.1.0/24"
 # ACCEPT IN
 "$IPTABLES" -N in
 "$IPTABLES" -A in -s "$LAN" -d "$LAN" -m comment --comment "LAN -> LAN" -j ACCEPT
-"$IPTABLES" -A in -j ACCEPT
+"$IPTABLES" -A in -m comment --comment "WAN -> LAN" -j ACCEPT
 
 # ACCEPT OUT
 "$IPTABLES" -N out
 "$IPTABLES" -A out -s "$LAN" -d "$LAN" -m comment --comment "LAN -> LAN"  -j ACCEPT
-"$IPTABLES" -A out -j ACCEPT
+"$IPTABLES" -A out -m comment --comment "LAN -> WAN" -j ACCEPT
 
 #########
 # BLOCK #
@@ -85,7 +85,7 @@ bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
 "$IPTABLES" -A INPUT -p tcp -s "$LAN" -d "$LAN" --dport 8200 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "DLNA" -j in
 "$IPTABLES" -A OUTPUT -p tcp -s "$LAN" --sport 8200 -d "$LAN" -m conntrack --ctstate ESTABLISHED -m comment --comment "DLNA" -j out
 "$IPTABLES" -A INPUT -p udp -s "$LAN" -d "$LAN" --dport 1900 -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j in
-"$IPTABLES" -A OUTPUT -p udp -s "$LAN" --sport 1900 -d "$LAN" -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j out
+"$IPTABLES" -A OUTPUT -p udp -s "$LAN" --sport 1900 -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j out
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -j ACCEPT
