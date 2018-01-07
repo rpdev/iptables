@@ -5,7 +5,7 @@ if [ $# != 1 ]; then
     exit 1
 fi
 
-$SSH_PORT="$1"
+SSH_PORT="$1"
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
 
@@ -16,14 +16,12 @@ LAN="192.168.1.0/24"
 "$IPTABLES" -X
 "$IPTABLES" -F
 
-
 ##########
 # POLICY #
 ##########
 "$IPTABLES" -P INPUT DROP
 "$IPTABLES" -P OUTPUT DROP
 "$IPTABLES" -P FORWARD DROP
-
 
 ##########
 # CHAINS #
