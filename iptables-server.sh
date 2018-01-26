@@ -84,8 +84,8 @@ bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
 # DLNA
 "$IPTABLES" -A INPUT -p tcp -s "$LAN" -d "$LAN" --dport 8200 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "DLNA" -j in
 "$IPTABLES" -A OUTPUT -p tcp -s "$LAN" --sport 8200 -d "$LAN" -m conntrack --ctstate ESTABLISHED -m comment --comment "DLNA" -j out
-"$IPTABLES" -A INPUT -p udp -s "$LAN" -d "$LAN" --dport 1900 -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j in
-"$IPTABLES" -A OUTPUT -p udp -s "$LAN" --sport 1900 -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j out
+"$IPTABLES" -A INPUT -p udp -s "$LAN" --dport 1900 -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j in
+"$IPTABLES" -A OUTPUT -p udp --sport 1900 -d "$LAN" -m pkttype --pkt-type broadcast -m comment --comment "DLNA" -j out
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -j ACCEPT
