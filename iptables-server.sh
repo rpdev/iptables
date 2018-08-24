@@ -8,6 +8,7 @@ fi
 SSH_PORT="$1"
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
+IF="p2p1"
 
 #########
 # RESET #
@@ -70,8 +71,8 @@ bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
 "$IPTABLES" -A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "HTTPS" -j out
 
 # SSH
-"$IPTABLES" -A INPUT -p tcp -s "$LAN" -d "$LAN" --dport "$SSH_PORT" -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "SSH" -j in
-"$IPTABLES" -A OUTPUT -p tcp -s "$LAN" -d "$LAN" --sport "$SSH_PORT" -m conntrack --ctstate ESTABLISHED -m comment --comment "SSH" -j out
+"$IPTABLES" -A INPUT -i "$IF" -p tcp -s "$LAN" -d "$LAN" --dport "$SSH_PORT" -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "SSH" -j in
+"$IPTABLES" -A OUTPUT -o "$IF" -p tcp -s "$LAN" -d "$LAN" --sport "$SSH_PORT" -m conntrack --ctstate ESTABLISHED -m comment --comment "SSH" -j out
 
 # SMTPS
 "$IPTABLES" -A INPUT -p tcp --sport 465 -m conntrack --ctstate ESTABLISHED -m comment --comment "SMTP TLS/SSL" -j in
@@ -82,14 +83,22 @@ bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
 "$IPTABLES" -A OUTPUT -p tcp --dport 587 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "SMTP" -j out
 
 # DLNA
-"$IPTABLES" -A INPUT -p tcp -s "$LAN" -d "$LAN" --dport 8200 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "DLNA" -j in
-"$IPTABLES" -A OUTPUT -p tcp -s "$LAN" --sport 8200 -d "$LAN" -m conntrack --ctstate ESTABLISHED -m comment --comment "DLNA" -j out
-"$IPTABLES" -A INPUT -p udp -s "$LAN" --dport 1900 -m comment --comment "DLNA" -j in
-"$IPTABLES" -A OUTPUT -p udp --sport 1900 -d "$LAN" -m comment --comment "DLNA" -j out
+"$IPTABLES" -A INPUT -i "$IF" -p tcp -s "$LAN" -d "$LAN" --dport 8200 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "DLNA" -j in
+"$IPTABLES" -A OUTPUT -o "$IF" -p tcp -s "$LAN" --sport 8200 -d "$LAN" -m conntrack --ctstate ESTABLISHED -m comment --comment "DLNA" -j out
+
+# SSDP
+"$IPTABLES" -A INPUT -i "$IF" -p udp -s "$LAN" --sport 1900 -d 239.255.255.250 --dport 1900 -m comment --comment "SSDP Notify" -j in
+"$IPTABLES" -A OUTPUT -o "$IF" -p udp -s "$LAN" --sport 1900 -d 239.255.255.250 --dport 1900 -m comment --comment "SSDP Notify" -j out
+
+"$IPTABLES" -A INPUT -i "$IF" -p udp -s "$LAN" -d 239.255.255.250 --dport 1900 -m comment --comment "SSDP Search" -j in
+"$IPTABLES" -A OUTPUT -o "$IF" -p udp -s "$LAN" -d 239.255.255.250 --dport 1900 -m comment --comment "SSDP Search" -j out
+
+"$IPTABLES" -A INPUT -i "$IF" -p udp -s "$LAN" --sport 1900 -d "$LAN" -m comment --comment "SSDP HTTP OK" -j in
+"$IPTABLES" -A OUTPUT -o "$IF" -p udp -s "$LAN" --sport 1900 -d "$LAN" -m comment --comment "SSDP HTTP OK" -j out
 
 # Loopback
-"$IPTABLES" -A INPUT -i lo -j ACCEPT
-"$IPTABLES" -A OUTPUT -o lo -j ACCEPT
+"$IPTABLES" -A INPUT -i lo -s 127.0.0.0/8 -d 127.0.0.0/8 -j ACCEPT
+"$IPTABLES" -A OUTPUT -o lo -s 127.0.0.0/8 -d 127.0.0.0/8 -j ACCEPT
 
 # LOG
 "$IPTABLES" -A INPUT -j LOG --log-prefix "[INPUT]"

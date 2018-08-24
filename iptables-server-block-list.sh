@@ -9,6 +9,7 @@ fi
 IPTABLES="$1"
 LAN="$2"
 
+"$IPTABLES" -A INPUT -p udp --sport 68 --dport 67 -m comment --comment "DHCP Client" -j DROP
 "$IPTABLES" -A INPUT -p udp --sport 17500 --dport 17500 -m comment --comment "Dropbox" -j DROP
 "$IPTABLES" -A INPUT -p udp --sport 57621 --dport 57621 -m comment --comment "Spotify" -j DROP
 "$IPTABLES" -A INPUT -p udp -s "$LAN" --sport 137 --dport 137 -m comment --comment "NetBIOS Name Service" -j DROP
