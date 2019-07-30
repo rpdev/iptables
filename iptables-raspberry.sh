@@ -2,7 +2,7 @@
 
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
-GITHUB="192.30.252.0/22"
+GITHUB=(192.30.252.0/22 140.82.112.0/20)
 
 #########
 # CLEAN #
@@ -82,10 +82,12 @@ bash ./iptables-server-block-list.sh "$IPTABLES" "$LAN"
 "$IPTABLES" -A INPUT -p udp --sport 68 --dport 67 -m comment --comment "DHCP Client" -j DROP
 
 # Github
-"$IPTABLES" -A INPUT -p tcp -s "$GITHUB" --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "Github" -j ACCEPT
-"$IPTABLES" -A OUTPUT -p tcp -d "$GITHUB" --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Github" -j ACCEPT
-"$IPTABLES" -A INPUT -p tcp -s "$GITHUB" --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
-"$IPTABLES" -A OUTPUT -p tcp -d "$GITHUB" --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+for CIDR in "${GITHUB[@]}"; do
+    "$IPTABLES" -A INPUT -p tcp -s "$CIDR" --sport 22 -m conntrack --ctstate ESTABLISHED -m comment --comment "Github" -j ACCEPT
+    "$IPTABLES" -A OUTPUT -p tcp -d "$CIDR" --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "Github" -j ACCEPT
+    "$IPTABLES" -A INPUT -p tcp -s "$CIDR" --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+    "$IPTABLES" -A OUTPUT -p tcp -d "$CIDR" --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
+done
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -m comment --comment "Loopback" -j ACCEPT
