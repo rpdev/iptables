@@ -3,6 +3,8 @@
 IPTABLES="/sbin/iptables"
 LAN="192.168.1.0/24"
 GITHUB=(192.30.252.0/22 140.82.112.0/20)
+PI_UPD=(107.22.171.143 52.216.204.101 52.216.185.253 151.101.194.49 216.245.214.30 151.101.192.133 52.216.205.211 52.216.168.83 52.216.204.67 52.216.184.123)
+
 
 #########
 # CLEAN #
@@ -88,6 +90,13 @@ for CIDR in "${GITHUB[@]}"; do
     "$IPTABLES" -A INPUT -p tcp -s "$CIDR" --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
     "$IPTABLES" -A OUTPUT -p tcp -d "$CIDR" --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Github Update" -j ACCEPT
 done
+
+# Github
+for CIDR in "${PI_UPD[@]}"; do
+    "$IPTABLES" -A INPUT -p tcp -s "$CIDR" --sport 443 -m conntrack --ctstate ESTABLISHED -m comment --comment "PI-hole Update" -j ACCEPT
+    "$IPTABLES" -A OUTPUT -p tcp -d "$CIDR" --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -m comment --comment "PI-hole Update" -j ACCEPT
+done
+
 
 # Loopback
 "$IPTABLES" -A INPUT -i lo -m comment --comment "Loopback" -j ACCEPT
